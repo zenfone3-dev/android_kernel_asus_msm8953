@@ -3392,7 +3392,7 @@ int mdss_fb_atomic_commit(struct fb_info *info,
 	struct mdp_layer_commit_v1 *commit_v1;
 	struct mdp_output_layer *output_layer;
 	struct mdss_panel_info *pinfo;
-	bool wait_for_finish, wb_change = false;
+	bool wait_for_finish, update = false, wb_change = false;
 	int ret = -EPERM;
 	u32 old_xres = 0, old_yres = 0, old_format = 0;
 
@@ -3444,6 +3444,7 @@ int mdss_fb_atomic_commit(struct fb_info *info,
 						output_layer->buffer.width,
 						output_layer->buffer.height,
 						output_layer->buffer.format);
+					update = true;
 				}
 			}
 			ret = mfd->mdp.atomic_validate(mfd, file, commit_v1);
