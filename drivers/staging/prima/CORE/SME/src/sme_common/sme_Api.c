@@ -9909,7 +9909,6 @@ eHalStatus sme_WakeReasonIndCallback (tHalHandle hHal, void* pMsg)
 }
 #endif // WLAN_WAKEUP_EVENTS
 
-
 /**
  * sme_SetMaxTxPower() - Set the Maximum Transmit Power
  *
