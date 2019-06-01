@@ -30,6 +30,11 @@
 #include "wcd-mbhc-v2.h"
 #include "wcdcal-hwdep.h"
 
+/* ASUS_BSP Sharon +++ Fix TT1097728:headset hook key sometimes can't play or pause music (system suspend) */
+#include <linux/wakelock.h>
+static struct wake_lock hook_key_wake_lock;
+/* ASUS_BSP Sharon --- */
+
 #define WCD_MBHC_JACK_MASK (SND_JACK_HEADSET | SND_JACK_OC_HPHL | \
 			   SND_JACK_OC_HPHR | SND_JACK_LINEOUT | \
 			   SND_JACK_MECHANICAL | SND_JACK_MICROPHONE2 | \
@@ -49,7 +54,8 @@
 #define FW_READ_ATTEMPTS 15
 #define FW_READ_TIMEOUT 4000000
 #define FAKE_REM_RETRY_ATTEMPTS 3
-#define MAX_IMPED 60000
+//#define MAX_IMPED 60000
+#define MAX_IMPED 20000
 
 #define WCD_MBHC_BTN_PRESS_COMPL_TIMEOUT_MS  50
 #define ANC_DETECT_RETRY_CNT 7
@@ -879,7 +885,7 @@ static void wcd_mbhc_find_plug_and_report(struct wcd_mbhc *mbhc,
 exit:
 	pr_debug("%s: leave\n", __func__);
 }
-
+#if 0
 /* To determine if cross connection occured */
 static int wcd_check_cross_conn(struct wcd_mbhc *mbhc)
 {
@@ -945,7 +951,7 @@ static int wcd_check_cross_conn(struct wcd_mbhc *mbhc)
 
 	return (plug_type == MBHC_PLUG_TYPE_GND_MIC_SWAP) ? true : false;
 }
-
+#endif
 static bool wcd_is_special_headset(struct wcd_mbhc *mbhc)
 {
 	struct snd_soc_codec *codec = mbhc->codec;
@@ -1209,7 +1215,8 @@ static void wcd_correct_swch_plug(struct work_struct *work)
 	}
 
 	do {
-		cross_conn = wcd_check_cross_conn(mbhc);
+		//cross_conn = wcd_check_cross_conn(mbhc);
+		cross_conn = 0;
 		try++;
 	} while (try < GND_MIC_SWAP_THRESHOLD);
 	/*
@@ -1303,7 +1310,8 @@ correct_plug_type:
 
 		if ((!hs_comp_res) && (!is_pa_on)) {
 			/* Check for cross connection*/
-			ret = wcd_check_cross_conn(mbhc);
+			//ret = wcd_check_cross_conn(mbhc);
+			ret = 0;
 			if (ret < 0) {
 				continue;
 			} else if (ret > 0) {
@@ -1514,6 +1522,7 @@ static void wcd_mbhc_swch_irq_handler(struct wcd_mbhc *mbhc)
 
 	pr_debug("%s: mbhc->current_plug: %d detection_type: %d\n", __func__,
 			mbhc->current_plug, detection_type);
+
 	wcd_cancel_hs_detect_plug(mbhc, &mbhc->correct_plug_swch);
 
 	if (mbhc->mbhc_cb->micbias_enable_status)
@@ -1632,6 +1641,7 @@ static irqreturn_t wcd_mbhc_mech_plug_detect_irq(int irq, void *data)
 	struct wcd_mbhc *mbhc = data;
 
 	pr_debug("%s: enter\n", __func__);
+
 	if (unlikely((mbhc->mbhc_cb->lock_sleep(mbhc, true)) == false)) {
 		pr_warn("%s: failed to hold suspend\n", __func__);
 		r = IRQ_NONE;
@@ -1650,6 +1660,7 @@ static int wcd_mbhc_get_button_mask(struct wcd_mbhc *mbhc)
 	int btn;
 
 	btn = mbhc->mbhc_cb->map_btn_code_to_num(mbhc->codec);
+	printk("%s:btn=%d \n",__func__,btn);
 
 	switch (btn) {
 	case 0:
@@ -1955,9 +1966,16 @@ static irqreturn_t wcd_mbhc_btn_press_handler(int irq, void *data)
 			 __func__);
 		goto done;
 	}
+
 	mask = wcd_mbhc_get_button_mask(mbhc);
-	if (mask == SND_JACK_BTN_0)
+
+	if (mask == SND_JACK_BTN_0) {
+		//Sharon+++Fix TT1097728:headset hook key sometimes can't play or pause music (system suspend)
+		wake_lock_timeout(&hook_key_wake_lock, msecs_to_jiffies(3000));
+		printk("%s:after Wakelock 3 sec for hook_key \n",__func__);
+		//Sharon---
 		mbhc->btn_press_intr = true;
+	}
 
 	if (mbhc->current_plug != MBHC_PLUG_TYPE_HEADSET) {
 		pr_debug("%s: Plug isn't headset, ignore button press\n",
@@ -2325,6 +2343,7 @@ int wcd_mbhc_start(struct wcd_mbhc *mbhc,
 			pr_err("%s: Skipping to read mbhc fw, 0x%pK %pK\n",
 				 __func__, mbhc->mbhc_fw, mbhc->mbhc_cal);
 	}
+	wake_lock_init(&hook_key_wake_lock, WAKE_LOCK_SUSPEND, "hook_key_lock"); //Sharon+++Fix TT1097728:headset hook key sometimes can't play or pause music (system suspend)
 	pr_debug("%s: leave %d\n", __func__, rc);
 	return rc;
 }

@@ -98,8 +98,10 @@ enum {
 #define EAR_PMU 1
 #define SPK_PMD 2
 #define SPK_PMU 3
-
-#define MICBIAS_DEFAULT_VAL 1800000
+/* ASUS_BSP : Eric +++ */
+//#define MICBIAS_DEFAULT_VAL 1800000
+#define MICBIAS_DEFAULT_VAL 2800000
+/* ASUS_BSP : Eric --- */
 #define MICBIAS_MIN_VAL 1600000
 #define MICBIAS_STEP_SIZE 50000
 
@@ -4120,16 +4122,24 @@ void wcd_imped_config(struct snd_soc_codec *codec,
 		case CAJON_2_0:
 		case DIANGU:
 			if (value >= 13) {
+				//Bruno++ Control PA gain from xml, not by ohm.
+				/*
 				snd_soc_update_bits(codec,
 					MSM8X16_WCD_A_ANALOG_RX_EAR_CTL,
 					0x20, 0x20);
+				*/
+				//Bruno++
 				snd_soc_update_bits(codec,
 					MSM8X16_WCD_A_ANALOG_NCP_VCTRL,
 					0x07, 0x07);
 			} else {
+				//Bruno++ Control PA gain from xml, not by ohm.
+				/*
 				snd_soc_update_bits(codec,
 					MSM8X16_WCD_A_ANALOG_RX_EAR_CTL,
 					0x20, 0x00);
+				*/
+				//Bruno++
 				snd_soc_update_bits(codec,
 					MSM8X16_WCD_A_ANALOG_NCP_VCTRL,
 					0x07, 0x04);
