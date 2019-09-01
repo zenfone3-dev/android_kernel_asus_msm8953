@@ -42,6 +42,9 @@
 
 #define FBPIXMAPSIZE	(1024 * 8)
 
+extern void ftxxxx_ts_suspend(void); // nancy+++
+
+
 static DEFINE_MUTEX(registration_lock);
 
 struct fb_info *registered_fb[FB_MAX] __read_mostly;
@@ -1214,6 +1217,10 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 		console_unlock();
 		break;
 	case FBIOBLANK:
+		//ASUS_BSP: Austin +++
+		printk("[Display] FBIOBLANK(%d)+++\n", (int) arg);
+		if((int)arg ==4)
+			ftxxxx_ts_suspend();//nancy+++
 		console_lock();
 		if (!lock_fb_info(info)) {
 			console_unlock();
@@ -1224,6 +1231,7 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 		info->flags &= ~FBINFO_MISC_USEREVENT;
 		unlock_fb_info(info);
 		console_unlock();
+		printk("[Display] FBIOBLANK(%d)---\n", (int) arg);
 		break;
 	default:
 		fb = info->fbops;
