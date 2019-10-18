@@ -1,0 +1,21 @@
+config ASUS_MSM8953
+	bool "Asus MSM8998 boards"
+	depends on ARCH_MSM8953
+	help
+	 Support for Asus MSM8953 boards.
+
+menu "Asus board selection"
+
+config ASUS_DEVICE_LIBRA_LEO
+	bool "Asus libra-leo"
+	select ASUS_MSM8953
+	help
+	 Support for Asus Zenfone3 ZE520KL / ZE552KL
+
+config ASUS_DEVICE_HADES
+	bool "Asus hades"
+	select ASUS_MSM8953
+	help
+	 Support for Asus Zenfone 3 Zoom ZE552KL
+
+endmenu
