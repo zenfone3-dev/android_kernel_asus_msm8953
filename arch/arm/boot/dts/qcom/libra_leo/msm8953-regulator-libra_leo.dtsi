@@ -1,0 +1,16 @@
+&rpm_bus {
+	rpm-regulator-ldoa8 {
+		pm8953_l8: regulator-l8 {
+			regulator-always-on;
+		};
+	};
+
+	rpm-regulator-ldoa10 {
+		pm8953_l10: regulator-l10 {
+			regulator-min-microvolt = <3000000>;
+			regulator-max-microvolt = <3000000>;
+			qcom,init-voltage = <3000000>;
+			regulator-always-on;
+		};
+	};
+};

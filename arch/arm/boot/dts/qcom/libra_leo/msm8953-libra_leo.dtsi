@@ -1,0 +1,211 @@
+/*
+ * Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/ {
+	firmware: firmware {
+		android {
+			fstab {
+				vendor {
+					status = "disabled";
+				};
+				system {
+					compatible = "android,system";
+					dev = "/dev/block/platform/soc/7824900.sdhci/by-name/system";
+					type = "ext4";
+					mnt_flags = "ro,barrier=1,discard";
+					fsmgr_flags = "wait,verify";
+					status = "ok";
+				};
+
+			};
+		};
+	};
+
+	reserved-memory {
+		other_ext_mem: other_ext_region@0 {
+			reg = <0x0 0x85000000 0x0 0x1800000>;
+		};
+
+		modem_mem: modem_region@0 {
+			no-map-fixup;
+		};
+
+		secure_mem: secure_region@0 {
+			size = <0 0x09800000>;
+		};
+		
+		asus_debug_mem: asus_debug_region@0 {
+			compatible = "removed-dma-pool";
+			no-map;
+			reg = <0x0 0xA0000000 0x0 0x00300000>;
+		};
+	};
+
+	aliases {
+		i2c6 = &i2c_6;
+		/delete-property/ spi3;
+	};
+};
+
+#include "msm8953-pinctrl-libra_leo.dtsi"
+
+&soc {
+	/delete-node/ spi@78b7000;
+
+	i2c_3: i2c@78b7000 { /* BLSP1 QUP3 */
+		/delete-property/ status;
+	};
+
+	i2c_6: i2c@7af6000 { /* BLSP2 QUP2 : AL/PS & RGB Sensor */
+		compatible = "qcom,i2c-msm-v2";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg-names = "qup_phys_addr";
+		reg = <0x7af6000 0x600>;
+		interrupt-names = "qup_irq";
+		interrupts = <0 300 0>;
+		qcom,clk-freq-out = <400000>;
+		qcom,clk-freq-in  = <19200000>;
+		clock-names = "iface_clk", "core_clk";
+		clocks = <&clock_gcc clk_gcc_blsp2_ahb_clk>,
+			<&clock_gcc clk_gcc_blsp2_qup2_i2c_apps_clk>;
+
+		pinctrl-names = "i2c_active", "i2c_sleep";
+		pinctrl-0 = <&i2c_6_active>;
+		pinctrl-1 = <&i2c_6_sleep>;
+		qcom,noise-rjct-scl = <0>;
+		qcom,noise-rjct-sda = <0>;
+		qcom,master-id = <84>;
+		qcom,disable-dma;
+	};
+
+	qcom,msm-imem@8600000 {
+		/delete-node/ dload_type@1c;
+	
+		dload_type@18 {
+			compatible = "qcom,msm-imem-dload-type";
+			reg = <0x18 4>;
+		};
+	};
+
+	/delete-node/ qseecom@85b00000;
+
+	qcom_seecom: qseecom@85000000 {
+		compatible = "qcom,qseecom";
+		reg = <0x85000000 0x1300000>;
+		reg-names = "secapp-region";
+		qcom,hlos-num-ce-hw-instances = <1>;
+		qcom,hlos-ce-hw-instance = <0>;
+		qcom,qsee-ce-hw-instance = <0>;
+		qcom,disk-encrypt-pipe-pair = <2>;
+		qcom,support-fde;
+		qcom,msm-bus,name = "qseecom-noc";
+		qcom,msm-bus,num-cases = <4>;
+		qcom,msm-bus,num-paths = <1>;
+		qcom,support-bus-scaling;
+		qcom,msm-bus,vectors-KBps =
+			<55 512 0 0>,
+			<55 512 0 0>,
+			<55 512 120000 1200000>,
+			<55 512 393600 3936000>;
+		clocks = <&clock_gcc clk_crypto_clk_src>,
+			 <&clock_gcc clk_gcc_crypto_clk>,
+			 <&clock_gcc clk_gcc_crypto_ahb_clk>,
+			 <&clock_gcc clk_gcc_crypto_axi_clk>;
+		clock-names = "core_clk_src", "core_clk",
+				"iface_clk", "bus_clk";
+		qcom,ce-opp-freq = <100000000>;
+	};
+
+	sdhc_1: sdhci@7824900 {
+		reg = <0x7824900 0x500>, <0x7824000 0x800>, <0x7824e00 0x200>;
+		reg-names = "hc_mem", "core_mem", "cmdq_mem";
+	};
+
+	qusb_phy: qusb@79000 {
+		/delete-property/ qcom,qusb-phy-init-seq;
+
+		qcom,qusb-phy-init-seq-libra = <0xF8 0x80
+					0x2F 0x84
+					0x83 0x88
+					0xC7 0x8C
+					0x14 0x9C
+					0x30 0x08
+					0x79 0x0C
+					0x21 0x10
+					0x00 0x90
+					0x9F 0x1C
+					0x00 0x18>;
+		qcom,qusb-phy-init-seq-leo = <0xF8 0x80
+					0x3F 0x84
+					0x83 0x88
+					0xC7 0x8C
+					0x14 0x9C
+					0x30 0x08
+					0x79 0x0C
+					0x21 0x10
+					0x00 0x90
+					0x9F 0x1C
+					0x00 0x18>;
+		qcom,qusb-phy-init-seq-host-libra = <0xF8 0x80
+					0x1F 0x84
+					0x83 0x88
+					0xC7 0x8C
+					0x14 0x9C
+					0x30 0x08
+					0x79 0x0C
+					0x21 0x10
+					0x00 0x90
+					0x9F 0x1C
+					0x00 0x18>;
+		qcom,qusb-phy-init-seq-host-leo = <0xF8 0x80
+					0x2F 0x84
+					0x83 0x88
+					0xC7 0x8C
+					0x14 0x9C
+					0x30 0x08
+					0x79 0x0C
+					0x21 0x10
+					0x00 0x90
+					0x9F 0x1C
+					0x00 0x18>;
+		qcom,qusb-phy-init-seq-cn = <0xF8 0x80
+					0x23 0x84
+					0x83 0x88
+					0xD7 0x8C
+					0x14 0x9C
+					0x30 0x08
+					0x79 0x0C
+					0x21 0x10
+					0x00 0x90
+					0x9F 0x1C
+					0x00 0x18>;
+		qcom,qusb-phy-init-seq-host-cn = <0xB8 0x80
+					0x23 0x84
+					0x83 0x88
+					0xD7 0x8C
+					0x14 0x9C
+					0x30 0x08
+					0x79 0x0C
+					0x21 0x10
+					0x00 0x90
+					0x9F 0x1C
+					0x00 0x18>;
+	};
+};
+
+#include "msm-pm8953-libra_leo.dtsi"
+#include "msm8953-regulator-libra_leo.dtsi"
+#include "msm8953-audio-libra_leo.dtsi"
+#include "msm8953-camera-libra_leo.dtsi"
+#include "msm8953-mdss-libra_leo.dtsi"

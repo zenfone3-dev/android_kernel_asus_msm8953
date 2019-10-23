@@ -1,0 +1,252 @@
+/*
+ * Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "msm8953-audio-mtp-libra_leo.dtsi"
+
+&i2c_2 {
+	us5587@38 {
+		compatible = "qcom,us5587";
+		reg = <0x38>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+};
+
+/delete-node/ &spi_3;
+
+&i2c_3 { 
+	focaltech@38 {
+		compatible = "focaltech,5X46";
+		focaltech,name = "ft5x46";
+		reg = <0x38>;
+		interrupt-parent = <&tlmm>;
+		vdd-supply = <&pm8953_l10>;
+		vcc_i2c-supply = <&pm8953_l6>;
+		pinctrl-names = "pmx_ts_active","pmx_ts_suspend","pmx_ts_release";
+		pinctrl-0 = <&ts_int_active &ts_reset_active>;
+		pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+		pinctrl-2 = <&ts_release>;
+		focaltech,family-id = <0x36>;
+		focaltech,reset-gpio = <&tlmm 64 0x0>;
+		focaltech,irq-gpio = <&tlmm 65 0x2008>;
+		focaltech,lcdid0-gpio=<&tlmm 59 0x0>;
+		focaltech,lcdid1-gpio=<&tlmm 62 0x0>;
+		focaltech,display-coords = <0 0 1080 1920>;
+		focaltech,panel-coords = <0 0 1080 1920>;
+		focaltech,button-map= <139 102 158>;
+		focaltech,no-force-update;
+		focaltech,i2c-pull-up;
+		focaltech,group-id = <1>;
+		focaltech,hard-reset-delay-ms = <20>;
+		focaltech,soft-reset-delay-ms = <200>;
+		focaltech,num-max-touches = <5>;
+		focaltech,fw-delay-aa-ms = <30>;
+		focaltech,fw-delay-55-ms = <30>;
+		focaltech,fw-upgrade-id1 = <0x79>;
+		focaltech,fw-upgrade-id2 = <0x18>;
+		focaltech,fw-delay-readid-ms = <10>;
+		focaltech,fw-delay-era-flsh-ms = <2000>;
+		focaltech,fw-auto-cal;
+		focaltech,ignore-id-check;
+	};
+};
+
+&i2c_6 {
+	qcom_cm3323e_i2c@10 {
+		compatible = "capella,cm3323e";
+		reg = <0x10>;
+		cam_vaf-supply = <&pm8953_l17>;
+		qcom,cam-vreg-name = "cam_vaf";
+		qcom,cam-vreg-min-voltage = <2850000>;
+		qcom,cam-vreg-max-voltage = <2850000>;
+		qcom,cam-vreg-op-mode = <80000>;
+	};
+
+	cm36686_i2c@60 {
+		compatible = "qcom,cm36686";
+		reg = <0x60>;
+		pinctrl-names = "alsps_gpio_high","alsps_gpio_low";
+		pinctrl-0 = <&ap3045_default>;
+		pinctrl-1 = <&ap3045_sleep>;
+		qcom,alsps-gpio = <&tlmm 43 0x0>;
+	};
+
+	AP3045_i2c@1C {
+		compatible = "qcom,ap3045";
+		reg = <0x1C>;
+		pinctrl-names = "alsps_gpio_high","alsps_gpio_low";
+		pinctrl-0 = <&ap3045_default>;
+		pinctrl-1 = <&ap3045_sleep>;
+		qcom,alsps-gpio = <&tlmm 43 0x0>;
+	};
+};
+
+&pm8953_l10 {
+	regulator-max-microvolt = <3000000>;
+};
+
+&soc {
+	gpio_keys {
+		/delete-node/ camera_focus;
+		/delete-node/ camera_snapshot;
+
+		vol_down {
+			label = "volume_down";
+			gpios = <&tlmm 13 0x1>;
+			linux,input-type = <1>;
+			linux,code = <114>;
+			debounce-interval = <15>;
+		};
+	};
+
+	asus-fingerprint {
+		compatible = "asus,fingerprint";
+		vcc-supply = <&pm8953_l6>;
+		asus-fp,sleep-gpio = <&tlmm 140 0x0>;
+		asus-fp,irq-gpio = <&tlmm 48 0x2008>;
+		asus-fp,vcc-enable-Leo-gpio = <&tlmm 40 0x0>;
+		asus-fp,vcc-enable-Libra-gpio = <&tlmm 87 0x0>;
+		asus-fp,ID1-gpio = <&tlmm 141 0x0>;
+		asus-fp,ID2-gpio = <&tlmm 66 0x0>;
+
+		qcom,use-pinctrl;
+		pinctrl-names = "fp_default", "fp_sleep";
+		pinctrl-0 = <&fp_int_active>;
+		pinctrl-1 = <&fp_int_suspend>;
+	};
+
+	hall_sensor {
+		compatible = "qcom,hall";
+		pinctrl-names = "hall_gpio_high","hall_gpio_low";
+		pinctrl-0 = <&gpio_hall_active>;
+		pinctrl-1 = <&gpio_hall_suspend>;			
+		qcom,hall-gpio = <&tlmm 12 0x0>;
+	};
+};
+
+#include "msm8953-mdss-panels-libra_leo.dtsi"
+
+&mdss_dsi0 {
+	qcom,dsi-pref-prim-pan = <&dsi_ctc5p5_ili7807b_1080p_video>;
+	qcom,dsi-pref-prim-pan = <&dsi_tm5p5_r63350_1080p_video>;
+	qcom,dsi-pref-prim-pan = <&dsi_tm5p2_r63350_1080p_video>;
+	qcom,dsi-pref-prim-pan = <&dsi_boe5p2_ili7807b_1080p_video>;
+	qcom,dsi-pref-prim-pan = <&dsi_txd5p5_nt35596_1080p_video>;
+	qcom,dsi-pref-prim-pan = <&dsi_lce5p5_otm1901a_1080p_video>;
+
+	/delete-property/ qcom,platform-te-gpio;
+	/delete-property/ qcom,platform-bklight-en-gpio;
+};
+
+/delete-node/ &mdss_dsi1;
+/delete-node/ &dsi_truly_1080_vid;
+/delete-node/ &dsi_truly_1080_cmd;
+/delete-node/ &dsi_lgd_incell_sw49106_fhd_video;
+
+&dsi_default_1080p_video {
+ 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+};
+
+&dsi_ctc5p5_ili7807b_1080p_video {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
+	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+	qcom,mdss-dsi-min-refresh-rate = <50>;
+	qcom,mdss-dsi-max-refresh-rate = <60>;
+};
+
+&dsi_tm5p5_r63350_1080p_video {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
+	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+	qcom,mdss-dsi-min-refresh-rate = <50>;
+	qcom,mdss-dsi-max-refresh-rate = <60>;
+};
+
+&dsi_tm5p2_r63350_1080p_video {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
+	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+	qcom,mdss-dsi-min-refresh-rate = <50>;
+	qcom,mdss-dsi-max-refresh-rate = <60>;
+};
+
+&dsi_boe5p2_ili7807b_1080p_video {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
+	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+	qcom,mdss-dsi-min-refresh-rate = <50>;
+	qcom,mdss-dsi-max-refresh-rate = <60>;
+};
+
+&dsi_txd5p5_nt35596_1080p_video {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
+	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+	qcom,mdss-dsi-min-refresh-rate = <50>;
+	qcom,mdss-dsi-max-refresh-rate = <60>;
+};
+
+&dsi_lce5p5_otm1901a_1080p_video {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
+	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+	qcom,mdss-dsi-min-refresh-rate = <50>;
+	qcom,mdss-dsi-max-refresh-rate = <60>;
+};
+
+&sdhc_1 {
+	qcom,vdd-always-on;
+};
+
+/{
+	mtp_batterydata_libra: qcom,battery-data_libra {
+		qcom,batt-id-range-pct = <15>;
+		#include "batterydata-Libra-2900mAh_4p38V-Coslight.dtsi"
+		#include "batterydata-Libra-2900mAh_4p38V-LG.dtsi"
+		#include "batterydata-Libra-2900mAh_4p38V-SMP.dtsi"
+		#include "batterydata-Libra-Generic.dtsi"
+	};
+	mtp_batterydata_leo: qcom,battery-data_leo {
+		qcom,batt-id-range-pct = <15>;
+		#include "batterydata-Leo-2530mAh_4p38V-SMP.dtsi"
+		#include "batterydata-Leo-Generic.dtsi"
+	};
+};
+
+&pmi8950_fg {
+	qcom,battery-data_libra = <&mtp_batterydata_libra>;
+	qcom,battery-data_leo = <&mtp_batterydata_leo>;
+	qcom,ext-sense-type;
+};
+
+&pmi8950_charger {
+	qcom,battery-data_libra = <&mtp_batterydata_libra>;
+	qcom,battery-data_leo = <&mtp_batterydata_leo>;
+	qcom,ext-sense-type;
+	qcom,external-typec;
+	qcom,typec-psy-name = "typec";
+	ADCPWREN-gpios01 = <&pmi8950_gpios 1 0x0>;
+	USBID_CTRL-gpios08 = <&pm8953_gpios 8 0x0>;
+	DPM_SW_EN-gpios134 = <&tlmm 134 0x0>;
+	ADC_VDD_EN-gpios99 = <&tlmm 99 0x1>;
+	USB_TEMP_ALERT-gpios90 = <&tlmm 90 0x1>;
+};
+
+&pm8953_gpios {
+	gpio@c700 {
+		reg = <0xc700 0x100>;
+		qcom,pin-num = <8>;
+		status = "okay";
+	};
+};

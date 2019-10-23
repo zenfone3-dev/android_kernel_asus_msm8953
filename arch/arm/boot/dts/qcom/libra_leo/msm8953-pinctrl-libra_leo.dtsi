@@ -1,0 +1,203 @@
+/*
+ * Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&soc {
+	tlmm: pinctrl@1000000 {
+		cam_sensor_rear_default: cam_sensor_rear_default {
+			mux {
+				pins = "gpio39";
+			};
+			config {
+				pins = "gpio39";
+			};
+		};
+
+		cam_sensor_rear_sleep: cam_sensor_rear_sleep {
+			mux {
+				pins = "gpio39";
+			};
+			config {
+				pins = "gpio39";
+			};
+		};
+
+		/delete-node/ cam_sensor_rear_default1;
+		/delete-node/ cam_sensor_rear_sleep1;
+		/delete-node/ mdss_dsi_gpio;
+
+		ap3045_int_pin {
+			ap3045_default: ap3045_default {
+				mux {
+					pins = "gpio43";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio43";
+					bias-pull-up;
+					drive-strength = <6>;
+				};
+			};
+
+			ap3045_sleep: ap3045_sleep {
+				mux {
+					pins = "gpio43";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio43";
+					bias-pull-up;
+					drive-strength = <6>;
+				};
+			};
+		};
+
+		hall_int_pin {
+			gpio_hall_active: gpio_hall_active {
+				mux {
+					pins = "gpio12";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio12";
+					drive-strength = <2>;
+					bias-pull-up;
+				};
+			};
+			
+			gpio_hall_suspend: gpio_hall_suspend {
+				mux {
+					pins = "gpio12";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio12";
+					drive-strength = <2>;
+					bias-pull-up;
+				};
+			};
+		};
+
+		sdc2_cd_on: cd_on {
+			config {
+				/delete-property/ bias-pull-up;
+				bias-disable;
+			};
+		};
+
+		i2c_6 {
+			i2c_6_active: i2c_6_active {
+				/* active state */
+				mux {
+					pins = "gpio22", "gpio23";
+					function = "blsp_i2c6";
+				};
+
+				config {
+					pins = "gpio22", "gpio23";
+					drive-strength = <2>;
+					bias-disable;
+				};
+			};
+
+			i2c_6_sleep: i2c_6_sleep {
+				/* suspended state */
+				mux {
+					pins = "gpio22", "gpio23";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio22", "gpio23";
+					drive-strength = <2>;
+					bias-disable;
+				};
+			};
+		};
+
+		pri-tlmm-lines {
+			pri_tlmm_lines_act: pri_tlmm_lines_act {
+				mux {
+					pins = "gpio88", "gpio91", "gpio93";
+				};
+
+				config {
+					pins = "gpio88", "gpio91", "gpio93";
+				};
+			};
+
+			pri_tlmm_lines_sus: pri_tlmm_lines_sus {
+				mux {
+					pins = "gpio88", "gpio91", "gpio93";
+				};
+
+				config {
+					pins = "gpio88", "gpio91", "gpio93";
+				};
+			};
+		};
+
+		tlmm_gpio_key {
+			gpio_key_active: gpio_key_active {
+				mux {
+					pins = "gpio13" , "gpio85";
+				};
+
+				config {
+					pins = "gpio13" , "gpio85";
+				};
+			};
+
+			gpio_key_suspend: gpio_key_suspend {
+				mux {
+					pins = "gpio13" , "gpio85";
+				};
+
+				config {
+					pins = "gpio13" , "gpio85";
+				};
+			};
+		};
+
+		tlmm_fp_int {
+			fp_int_active: fp_int_active {
+				mux {
+					pins = "gpio48";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio48";
+					drive-strength = <2>;
+					bias-disable = <0>; /* no pull */
+				};
+			};
+
+			fp_int_suspend: fp_int_suspend {
+				mux {
+					pins = "gpio48";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio48";
+					drive-strength = <2>;
+					bias-disable = <0>; /* no pull */
+				};
+			};
+		};
+	};
+};

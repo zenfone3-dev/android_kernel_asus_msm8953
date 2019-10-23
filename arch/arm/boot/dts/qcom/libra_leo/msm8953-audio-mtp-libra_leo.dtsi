@@ -1,0 +1,72 @@
+&int_codec {
+	qcom,msm-ext-pa = "primary", "quinary";
+	qcom,msm-mbhc-hphl-swh = <1>;
+	qcom,msm-hs-micbias-type = "external";
+	qcom,audio-routing =
+		"RX_BIAS", "MCLK",
+		"SPK_RX_BIAS", "MCLK",
+		"INT_LDO_H", "MCLK",
+		"MIC BIAS External", "Handset Mic",
+		"MIC BIAS External2", "Headset Mic",
+		"MIC BIAS External", "Secondary Mic",
+		"AMIC1", "MIC BIAS External",
+		"AMIC2", "MIC BIAS External2",
+		"AMIC3", "MIC BIAS External";
+
+	qcom,msm-gpios =
+		"pri_i2s",
+		"quin_i2s",
+		"comp_gpio";
+	qcom,pinctrl-names =
+		"all_off",
+		"pri_i2s_act",
+		"quin_act",
+		"quin_pri_i2s_act",
+		"comp_gpio_act",
+		"comp_gpio_pri_i2s_act",
+		"comp_gpio_quin_act",
+		"comp_gpio_quin_pri_i2s_act";
+	pinctrl-names =
+		"all_off",
+		"pri_i2s_act",
+		"quin_act",
+		"quin_pri_i2s_act",
+		"comp_gpio_act",
+		"comp_gpio_pri_i2s_act",
+		"comp_gpio_quin_act",
+		"comp_gpio_quin_pri_i2s_act";
+	pinctrl-0 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus
+			&pri_tlmm_lines_sus &pri_tlmm_ws_sus
+			&cdc_pdm_comp_lines_sus>;
+	pinctrl-1 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act
+			&pri_tlmm_lines_sus &pri_tlmm_ws_sus
+			&cdc_pdm_comp_lines_sus>;
+	pinctrl-2 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus
+			&pri_tlmm_lines_act &pri_tlmm_ws_act
+			&cdc_pdm_comp_lines_sus>;
+	pinctrl-3 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act
+			&pri_tlmm_lines_act &pri_tlmm_ws_act
+			&cdc_pdm_comp_lines_sus>;
+	pinctrl-4 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus
+			&pri_tlmm_lines_sus &pri_tlmm_ws_sus
+			&cdc_pdm_comp_lines_act>;
+	pinctrl-5 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act
+			&pri_tlmm_lines_sus &pri_tlmm_ws_sus
+			&cdc_pdm_comp_lines_act>;
+	pinctrl-6 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus
+			&pri_tlmm_lines_act &pri_tlmm_ws_act
+			&cdc_pdm_comp_lines_act>;
+	pinctrl-7 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act
+			&pri_tlmm_lines_act &pri_tlmm_ws_act
+			&cdc_pdm_comp_lines_act>;
+
+	AUDIO_DEBUG = <&tlmm 89 0x00>;
+};
+
+&wsa881x_i2c_f {
+	status = "disabled";
+};
+
+&wsa881x_i2c_45 {
+	status = "disabled";
+};
