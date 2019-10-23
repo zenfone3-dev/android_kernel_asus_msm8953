@@ -39,6 +39,16 @@ config SENSORS_ADS1013
 	  This driver can also be built as a module.  If so, the module
 	  will be called ads1013.
 
+config SENSORS_US5587
+	tristate "Micro Power Intellect US5587"
+	depends on I2C
+	help
+	  If you say yes here you get support for Micro Power Intellect US5587
+	  ADC device.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called us5587.
+
 config GENERIC_ADC_BATTERY
 	tristate "Generic battery support using IIO"
 	depends on IIO
